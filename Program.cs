@@ -10,14 +10,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 //Đăng ký ItemService để DI có thể inject vào Controller
 builder.Services.AddScoped<ItemsService>();
+builder.Services.AddScoped<CategoryService>();
 
-//add services to the container
-builder.Services.AddControllers();
 
 //Thêm Swagger để test API
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddControllers();
-builder.Services.AddSwaggerGen(); 
+
+builder.Services.AddControllers();             
+builder.Services.AddEndpointsApiExplorer();    
+builder.Services.AddSwaggerGen();             
 
 var app = builder.Build();
 

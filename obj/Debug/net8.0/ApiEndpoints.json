@@ -1,8 +1,8 @@
 [
   {
-    "ContainingType": "CaffePOS.Controllers.ItemController",
-    "Method": "GetAll",
-    "RelativePath": "api/Item",
+    "ContainingType": "CaffePOS.Controllers.CategoryController",
+    "Method": "GetAllCategory",
+    "RelativePath": "api/Category",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -20,9 +20,139 @@
     ]
   },
   {
-    "ContainingType": "CaffePOS.Controllers.ItemController",
+    "ContainingType": "CaffePOS.Controllers.CategoryController",
+    "Method": "CreateCategory",
+    "RelativePath": "api/Category",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "CaffePOS.Model.DTOs.Requests.CategoryPostDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CaffePOS.Controllers.CategoryController",
+    "Method": "Detail",
+    "RelativePath": "api/Category/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "CaffePOS.Model.DTOs.Response.CategoryResponseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "CaffePOS.Controllers.CategoryController",
+    "Method": "DeleteCategory",
+    "RelativePath": "api/Category/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CaffePOS.Controllers.CategoryController",
+    "Method": "EditCategory",
+    "RelativePath": "api/Category/{id}",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "CaffePOS.Model.DTOs.Requests.CategoryPostDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CaffePOS.Controllers.CategoryController",
+    "Method": "GetCategoryWithPagination",
+    "RelativePath": "api/Category/paginated",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "keyword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "isActive",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "sortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "sortDesc",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "CaffePOS.Services.CategoryService\u002BPaginationCategoryResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "CaffePOS.Controllers.ItemsController",
     "Method": "CreateItem",
-    "RelativePath": "api/Item",
+    "RelativePath": "api/Items",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -36,9 +166,29 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "CaffePOS.Controllers.ItemController",
+    "ContainingType": "CaffePOS.Controllers.ItemsController",
+    "Method": "GetAllItems",
+    "RelativePath": "api/Items",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[CaffePOS.Model.DTOs.Response.ItemResponseDto, CaffePOS, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "CaffePOS.Controllers.ItemsController",
     "Method": "Detail",
-    "RelativePath": "api/Item/{id}",
+    "RelativePath": "api/Items/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -62,9 +212,9 @@
     ]
   },
   {
-    "ContainingType": "CaffePOS.Controllers.ItemController",
+    "ContainingType": "CaffePOS.Controllers.ItemsController",
     "Method": "EditItem",
-    "RelativePath": "api/Item/{id}",
+    "RelativePath": "api/Items/{id}",
     "HttpMethod": "PATCH",
     "IsController": true,
     "Order": 0,
@@ -81,6 +231,78 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CaffePOS.Controllers.ItemsController",
+    "Method": "DeleteItem",
+    "RelativePath": "api/Items/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CaffePOS.Controllers.ItemsController",
+    "Method": "GetItemsWithPagination",
+    "RelativePath": "api/Items/paginated",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "keyword",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "categoryId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "isActive",
+        "Type": "System.Nullable\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "sortBy",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "sortDesc",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "CaffePOS.Services.ItemsService\u002BPaginatedItemsResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "CaffePost.Controllers.WeatherForecastController",
