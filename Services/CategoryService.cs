@@ -2,7 +2,6 @@
 using CaffePOS.Model;
 using CaffePOS.Model.DTOs.Requests;
 using CaffePOS.Model.DTOs.Response;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CaffePOS.Services
@@ -25,7 +24,8 @@ namespace CaffePOS.Services
             public int Page { get; set; } = 1;
             public int PageSize { get; set; } = 10;
             public string? SortBy { get; set; } = "category_name";
-            public bool SortOrder { get; set; } = false; // false = ASC, true = DESC
+            public bool IsDescending { get; set; } = false;
+            public bool SortOrder { get; internal set; }
         }
 
         // DTO cho response phân trang
@@ -40,6 +40,7 @@ namespace CaffePOS.Services
             public bool HasNext => Page < TotalPages;
         }
 
+        // Phân trang và tìm kiếm danh mục
         public async Task<PaginationCategoryResponse> GetCategoryWithPagination(CategorySearchRequest request)
         {
             try
@@ -48,22 +49,18 @@ namespace CaffePOS.Services
 
                 if (!string.IsNullOrEmpty(request.Keyword))
                 {
-                    query = query.Where(c => c.CategoryName.Contains(request.Keyword));
+                    query = query.Where(c => c.category_name.Contains(request.Keyword));
                 }
 
                 query = request.SortBy?.ToLower() switch
                 {
-                    "category_name" => request.SortOrder
-                        ? query.OrderByDescending(c => c.CategoryName)
-                        : query.OrderBy(c => c.CategoryName),
-                    "id" => request.SortOrder
-                        ? query.OrderByDescending(c => c.CategoryId)
-                        : query.OrderBy(c => c.CategoryId),
-                    _ => request.SortOrder
-                        ? query.OrderByDescending(c => c.CategoryName)
-                        : query.OrderBy(c => c.CategoryName)
+                    "id" => request.IsDescending
+                        ? query.OrderByDescending(c => c.category_id)
+                        : query.OrderBy(c => c.category_id),
+                    _ => request.IsDescending
+                        ? query.OrderByDescending(c => c.category_name)
+                        : query.OrderBy(c => c.category_name)
                 };
-
 
                 var totalCount = await query.CountAsync();
 
@@ -72,10 +69,12 @@ namespace CaffePOS.Services
                     .Take(request.PageSize)
                     .Select(c => new CategoryResponseDto
                     {
-                        category_id = c.CategoryId,
-                        category_name = c.CategoryName,
-                        description = c.Description,
-                        // Thêm các properties khác cần mapping
+                        category_id = c.category_id,
+                        category_name = c.category_name,
+                        description = c.description,
+                        is_active = c.is_active,
+                        created_at = c.created_at,
+                        updated_at = c.updated_at
                     })
                     .ToListAsync();
 
@@ -89,24 +88,26 @@ namespace CaffePOS.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lối khi lấy sản phẩm phân trang");
+                _logger.LogError(ex, "Lỗi khi lấy danh mục phân trang");
                 throw;
             }
         }
 
-        // Thêm method để lấy category theo ID (tuỳ chọn)
+        // Lấy chi tiết danh mục theo id
         public async Task<CategoryResponseDto?> Detail(int id)
         {
             try
             {
                 var category = await _context.Category
-                    .Where(c => c.CategoryId == id)
+                    .Where(c => c.category_id == id)
                     .Select(c => new CategoryResponseDto
                     {
-                        category_id = c.CategoryId,
-                        category_name = c.CategoryName,
-                        description = c.Description,
-                        // Thêm các properties khác cần mapping
+                        category_id = c.category_id,
+                        category_name = c.category_name,
+                        description = c.description,
+                        is_active = c.is_active,
+                        created_at = c.created_at,
+                        updated_at = c.updated_at
                     })
                     .FirstOrDefaultAsync();
 
@@ -114,57 +115,60 @@ namespace CaffePOS.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi lấy danh mục sản phẩm theo ID: {Id}", id);
+                _logger.LogError(ex, "Lỗi khi lấy chi tiết danh mục ID: {Id}", id);
                 throw;
             }
         }
 
-        //Lấy toàn bộ danh sách category
+        // Lấy toàn bộ danh mục đang hoạt động
         public async Task<List<CategoryResponseDto>> GetAllCategory()
         {
             try
             {
                 return await _context.Category
-                    .Where(c => c.IsActive)
+                    .Where(c => c.is_active)
                     .Select(c => new CategoryResponseDto
                     {
-                        category_id = c.CategoryId,
-                        category_name = c.CategoryName,
-                        description = c.Description,
-                        created_at = c.CreatedAt,
-                        updated_at = c.UpdatedAt,
-                        is_active = c.IsActive
+                        category_id = c.category_id,
+                        category_name = c.category_name,
+                        description = c.description,
+                        created_at = c.created_at,
+                        updated_at = c.updated_at,
+                        is_active = c.is_active
                     }).ToListAsync();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi lấy toàn bộ danh mục sản phẩm");
+                _logger.LogError(ex, "Lỗi khi lấy toàn bộ danh mục");
                 throw;
             }
         }
-        //Thêm mới category
 
-        public async Task<CategoryResponseDto> CreateCategory(Category category)
+        // Tạo mới danh mục
+        public async Task<CategoryResponseDto> CreateCategory(CategoryPostDto createDto)
         {
             try
             {
-                if (category == null)
-                    throw new ArgumentNullException(nameof(category));
-
-                category.CreatedAt = DateTime.Now;
-                category.UpdatedAt = DateTime.Now;
+                var category = new Category
+                {
+                    category_name = createDto.category_name,
+                    description = createDto.description,
+                    is_active = createDto.is_active,
+                    created_at = DateTime.UtcNow,
+                    updated_at = DateTime.UtcNow
+                };
 
                 _context.Category.Add(category);
                 await _context.SaveChangesAsync();
 
                 return new CategoryResponseDto
                 {
-                    category_id = category.CategoryId,
-                    category_name = category.CategoryName,
-                    description = category.Description,
-                    created_at = category.CreatedAt,
-                    updated_at = category.UpdatedAt,
-                    is_active = category.IsActive
+                    category_id = category.category_id,
+                    category_name = category.category_name,
+                    description = category.description,
+                    created_at = category.created_at,
+                    updated_at = category.updated_at,
+                    is_active = category.is_active
                 };
             }
             catch (Exception ex)
@@ -174,64 +178,60 @@ namespace CaffePOS.Services
             }
         }
 
-        //Xóa danh mục sản phẩm
+        // Xóa danh mục
         public async Task<bool> DeleteCategory(int id)
         {
             try
             {
-                var category = await _context.Category.FirstOrDefaultAsync(p => p.CategoryId == id);
+                var category = await _context.Category.FindAsync(id);
                 if (category == null)
                 {
-                    _logger.LogWarning("Không tìm thấy sản phẩm");
+                    _logger.LogWarning("Không tìm thấy danh mục để xóa với ID: {Id}", id);
                     return false;
                 }
-                _context.Remove(category);
+
+                _context.Category.Remove(category);
                 await _context.SaveChangesAsync();
-                _logger.LogInformation("Đã xóa sản phẩm thành công");
+                _logger.LogInformation("Đã xóa danh mục ID: {Id} thành công", id);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Có lỗi khi xóa sản phẩm");
-                return false;
+                _logger.LogError(ex, "Có lỗi khi xóa danh mục ID: {Id}", id);
+                throw;
             }
         }
-        //Sửa danh mục sản phẩm
+
+        // Sửa danh mục
         public async Task<CategoryResponseDto?> EditCategory(int id, CategoryPostDto categoryDto)
         {
             try
             {
-                // Tìm category theo ID
-                var category = await _context.Category.FirstOrDefaultAsync(c => c.CategoryId == id);
+                var category = await _context.Category.FindAsync(id);
 
                 if (category == null)
                 {
-                    _logger.LogWarning("Không tìm thấy danh mục với ID: {Id}", id);
+                    _logger.LogWarning("Không tìm thấy danh mục để cập nhật với ID: {Id}", id);
                     return null;
                 }
 
-                // Cập nhật thông tin
-                category.CategoryName = categoryDto.category_name;
-                category.Description = categoryDto.description;
-                category.UpdatedAt = DateTime.Now;
+                category.category_name = categoryDto.category_name;
+                category.description = categoryDto.description;
+                category.is_active = categoryDto.is_active;
+                category.updated_at = DateTime.UtcNow;
 
-                // Sửa lại phần này - bỏ HasValue
-                category.IsActive = categoryDto.is_active;
-
-                _context.Category.Update(category);
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Đã cập nhật danh mục ID: {Id} thành công", id);
 
-                // Trả về response DTO
                 return new CategoryResponseDto
                 {
-                    category_id = category.CategoryId,
-                    category_name = category.CategoryName,
-                    description = category.Description,
-                    created_at = category.CreatedAt,
-                    updated_at = category.UpdatedAt,
-                    is_active = category.IsActive
+                    category_id = category.category_id,
+                    category_name = category.category_name,
+                    description = category.description,
+                    created_at = category.created_at,
+                    updated_at = category.updated_at,
+                    is_active = category.is_active
                 };
             }
             catch (Exception ex)
@@ -239,6 +239,11 @@ namespace CaffePOS.Services
                 _logger.LogError(ex, "Có lỗi khi cập nhật danh mục ID: {Id}", id);
                 throw;
             }
+        }
+
+        internal async Task CreateCategory(Category category)
+        {
+            throw new NotImplementedException();
         }
     }
 }

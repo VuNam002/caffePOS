@@ -101,16 +101,8 @@ namespace CaffePOS.Controllers
                 {
                     return BadRequest("Tên danh mục không được vượt quá 100 ký tự");
                 }
-
-                var category = new Category
-                {
-                    CategoryName = dto.category_name,    // Sửa mapping
-                    Description = dto.description,      // Sửa mapping
-                    IsActive = dto.is_active,
-                };
-
-                var createdCategory = await _categoryService.CreateCategory(category);
-                return CreatedAtAction(nameof(Detail), new { id = createdCategory.category_id }, createdCategory);
+                var createdCategory = await _categoryService.CreateCategory(dto);
+                return Ok(createdCategory);
             }
             catch (ArgumentException ex)
             {

@@ -6,25 +6,23 @@ namespace CaffePOS.Model
     public class Payments
     {
         [Key]
-        [Column("payment_id")]
-        public int PaymentId { get; set; }
+        public int payment_id { get; set; }
 
-        [Column("order_id")]
-        public int OrderId { get; set; }
+        [ForeignKey("Order")]
+        public int order_id { get; set; }
 
-        [Column("payment_date")]
-        public DateTime? PaymentDate { get; set; }
+        public DateTime payment_date { get; set; }
 
-        [Column("amount")]
-        public decimal? Amount { get; set; }
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal amount { get; set; }
 
-        [Column("method")]
-        public string? Method { get; set; }
+        public string? method { get; set; }
 
-        [Column("transaction_id")]
-        public string? TransactionId { get; set; }
+        public string? transaction_id { get; set; }
 
-        [Column("notes")]
-        public string? Nodes { get; set; }
+        public string? notes { get; set; }
+
+        // Thuộc tính điều hướng đến đơn hàng được thanh toán
+        public virtual Order? Order { get; set; }
     }
 }

@@ -11,6 +11,10 @@ namespace CaffePOS.Data
         // DbSets
         public DbSet<Category> Category { get; set; }
         public DbSet<Items> Items { get; set; }
+        public DbSet<Users> Users { get; set; }
+        public DbSet<Role> Role { get; set; }
+        public DbSet<Order> Order { get; set; }
+        public object Roles { get; internal set; }
 
         public override int SaveChanges()
         {
@@ -51,7 +55,10 @@ namespace CaffePOS.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Items>()
-                .ToTable(tb => tb.HasTrigger("TR_Items_Update")); 
+                .ToTable(tb => tb.HasTrigger("TR_Items_Update"));
+            modelBuilder.Entity<Users>()
+                .ToTable(tb => tb.HasTrigger("Users_AuditLog ")); 
+
 
             base.OnModelCreating(modelBuilder);
         }

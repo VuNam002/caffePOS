@@ -122,6 +122,7 @@ D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\CaffePOS.AssemblyInfo.cs
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\CaffePOS.csproj.CoreCompileInputs.cache
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\CaffePOS.MvcApplicationPartsAssemblyInfo.cs
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\CaffePOS.MvcApplicationPartsAssemblyInfo.cache
+D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\CaffePOS.sourcelink.json
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\rjimswa.dswa.cache.json
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
@@ -130,11 +131,12 @@ D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\staticwebassets.build.json
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\staticwebassets.build.json.cache
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\staticwebassets.development.json
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\CaffePOS.csproj.Up2Date
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\CaffePOS.dll
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\refint\CaffePOS.dll
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\CaffePOS.pdb
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\CaffePOS.genruntimeconfig.cache
 D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\ref\CaffePOS.dll
-D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\CaffePOS.sourcelink.json
+D:\dotnet\project_one\CaffePost\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+D:\dotnet\project_one\CaffePost\bin\Debug\net8.0\BCrypt.Net-Next.dll
+D:\dotnet\project_one\CaffePost\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

@@ -54,10 +54,13 @@ namespace CaffePOS.Services
                 if (!string.IsNullOrEmpty(request.Keyword))
                 {
                     var keyword = request.Keyword.ToLower();
+
+                    // === SỬA LỖI Ở ĐÂY ===
+                    // Thêm kiểm tra != null để tránh lỗi crash khi Name hoặc Description trống
                     query = query.Where(i =>
-                        i.Name.ToLower().Contains(keyword) ||
-                        i.Description.ToLower().Contains(keyword) ||
-                        (i.Category != null && i.Category.CategoryName.ToLower().Contains(keyword))
+                        (i.Name != null && i.Name.ToLower().Contains(keyword)) ||
+                        (i.Description != null && i.Description.ToLower().Contains(keyword)) ||
+                        (i.Category != null && i.Category.CategoryName != null && i.Category.CategoryName.ToLower().Contains(keyword))
                     );
                 }
 
@@ -73,6 +76,7 @@ namespace CaffePOS.Services
                     query = query.Where(i => i.IsActive == request.IsActive.Value);
                 }
 
+                // Sắp xếp
                 query = request.SortBy?.ToLower() switch
                 {
                     "price" => request.SortDesc ?
@@ -103,7 +107,7 @@ namespace CaffePOS.Services
                         description = i.Description,
                         price = i.Price,
                         category_id = i.CategoryId,
-                        category_name = i.Category != null ? i.Category.CategoryName : null,
+                        category_name = i.Category == null ? null : (string)i.Category.CategoryName,
                         image_url = i.ImageUrl,
                         is_active = i.IsActive,
                         created_at = i.CreatedAt,
@@ -142,7 +146,7 @@ namespace CaffePOS.Services
                         description = i.Description,
                         price = i.Price,
                         category_id = i.CategoryId,
-                        category_name = i.Category != null ? i.Category.CategoryName : null,
+                        category_name = i.Category == null ? null : (string)i.Category.CategoryName,
                         image_url = i.ImageUrl,
                         is_active = i.IsActive,
                         created_at = i.CreatedAt,
@@ -171,7 +175,7 @@ namespace CaffePOS.Services
                         description = i.Description,
                         price = i.Price,
                         category_id = i.CategoryId,
-                        category_name = i.Category != null ? i.Category.CategoryName : null,
+                        category_name = i.Category == null ? null : (string)i.Category.CategoryName,
                         image_url = i.ImageUrl,
                         is_active = i.IsActive,
                         created_at = i.CreatedAt,
@@ -212,9 +216,18 @@ namespace CaffePOS.Services
                 _context.Items.Add(item);
                 await _context.SaveChangesAsync();
 
+                // Lấy lại thông tin đầy đủ (bao gồm cả Category) để trả về
                 var createdItem = await _context.Items
                     .Include(i => i.Category)
                     .FirstOrDefaultAsync(i => i.ItemId == item.ItemId);
+
+                // Nếu createdItem là null (không thể xảy ra) thì xử lý
+                if (createdItem == null)
+                {
+                    _logger.LogError("Không thể tìm thấy item vừa tạo: {ItemId}", item.ItemId);
+                    // Trả về từ item gốc, dù không có category name
+                    return new ItemResponseDto { item_id = item.ItemId, name = item.Name, /*...*/ };
+                }
 
                 return new ItemResponseDto
                 {
@@ -223,7 +236,7 @@ namespace CaffePOS.Services
                     description = createdItem.Description,
                     price = createdItem.Price,
                     category_id = createdItem.CategoryId,
-                    category_name = createdItem.Category?.CategoryName,
+                    category_name = (string)createdItem.Category?.CategoryName,
                     image_url = createdItem.ImageUrl,
                     is_active = createdItem.IsActive,
                     created_at = createdItem.CreatedAt,
@@ -236,13 +249,14 @@ namespace CaffePOS.Services
                 throw;
             }
         }
+
         //Sửa sản phẩm
         public async Task<ItemResponseDto?> EditItem(int id, ItemsPostDto itemDto)
         {
             try
             {
                 var existingItem = await _context.Items
-                    .Include(i => i.Category)
+                    .Include(i => i.Category) 
                     .FirstOrDefaultAsync(i => i.ItemId == id);
 
                 if (existingItem == null)
@@ -250,11 +264,10 @@ namespace CaffePOS.Services
                     _logger.LogWarning("Không tìm thấy sản phẩm có id = {Id}", id);
                     return null;
                 }
-
                 if (!string.IsNullOrEmpty(itemDto.name))
                     existingItem.Name = itemDto.name;
 
-                if (!string.IsNullOrEmpty(itemDto.description))
+                if (itemDto.description != null) 
                     existingItem.Description = itemDto.description;
 
                 if (itemDto.price.HasValue)
@@ -262,19 +275,24 @@ namespace CaffePOS.Services
 
                 if (itemDto.category_id > 0)
                 {
-                    var categoryExists = await _context.Category.AnyAsync(c => c.CategoryId == itemDto.category_id);
-                    if (categoryExists)
+                    var category = await _context.Category.FindAsync(itemDto.category_id);
+                    if (category != null)
+                    {
                         existingItem.CategoryId = itemDto.category_id;
+                        existingItem.Category = category; 
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Không tìm thấy Category ID {CatId} khi cập nhật Item {ItemId}", itemDto.category_id, id);
+                    }
                 }
 
-                if (!string.IsNullOrEmpty(itemDto.image_url))
+                if (itemDto.image_url != null)
                     existingItem.ImageUrl = itemDto.image_url;
 
                 existingItem.IsActive = itemDto.is_active;
-
                 existingItem.UpdatedAt = DateTime.Now;
 
-                _context.Items.Update(existingItem);
                 await _context.SaveChangesAsync();
 
                 return new ItemResponseDto
@@ -284,7 +302,7 @@ namespace CaffePOS.Services
                     description = existingItem.Description,
                     price = existingItem.Price,
                     category_id = existingItem.CategoryId,
-                    category_name = existingItem.Category?.CategoryName,
+                    category_name = (string)existingItem.Category?.CategoryName,
                     image_url = existingItem.ImageUrl,
                     is_active = existingItem.IsActive,
                     created_at = existingItem.CreatedAt,
@@ -297,24 +315,26 @@ namespace CaffePOS.Services
                 throw;
             }
         }
+
         //Xóa sản phẩm
         public async Task<bool> DeleteItem(int id)
         {
             try
             {
                 var item = await _context.Items.FirstOrDefaultAsync(p => p.ItemId == id);
-                if(item ==null)
+                if (item == null)
                 {
-                    _logger.LogWarning("Không tìm thấy sản phẩm");
+                    _logger.LogWarning("Không tìm thấy sản phẩm ID {Id} để xóa", id);
                     return false;
                 }
                 _context.Items.Remove(item);
                 await _context.SaveChangesAsync();
-                _logger.LogInformation("Đã xóa sản phẩm thành công");
+                _logger.LogInformation("Đã xóa sản phẩm ID {Id} thành công", id);
                 return true;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi xóa sản phẩm");
+                _logger.LogError(ex, "Lỗi khi xóa sản phẩm ID {Id}", id);
                 throw;
             }
         }

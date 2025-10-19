@@ -6,19 +6,19 @@ namespace CaffePOS.Model
     public class Permissions
     {
         [Key]
-        [Column("permission_id")]
-        public int Permission { get; set; }
+        public int permission_id { get; set; }
 
-        [Column("permission_name")]
-        public string PermissionName { get; set; } = string.Empty;
+        [Required]
+        [StringLength(50)]
+        public string? permission_name { get; set; }
 
-        [Column("description")]
-        public string? Description { get; set; }
+        public string? description { get; set; }
 
-        [Column("module")]
-        public string? Module { get; set; }
+        [StringLength(50)]
+        public required string module { get; set; }
 
-        [Column("create_at")]
-        public DateTime? CreatedAt { get; set; }
+        public DateTime create_at { get; set; }
+
+        public virtual required ICollection<RolePermission> RolePermissions { get; set; }
     }
 }

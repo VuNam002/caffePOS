@@ -1,0 +1,164 @@
+﻿using CaffePOS.Data;
+using CaffePOS.Model;
+using CaffePOS.Model.DTOs.Requests;
+using CaffePOS.Model.DTOs.Response;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace CaffePOS.Services
+{
+    public class RoleService
+    {
+        private readonly AppDbContext _context;
+        private readonly ILogger<RoleService> _logger;
+
+        public RoleService(AppDbContext context, ILogger<RoleService> logger)
+        {
+            _context = context;
+            _logger = logger;
+        }
+
+        public async Task<List<RoleResponseDto>> GetRoleAll()
+        {
+            try
+            {
+                var roles = await _context.Role
+                    .Select(roles => new RoleResponseDto
+                    {
+                        role_id = roles.role_id,
+                        role_name = roles.role_name,
+                        description = roles.description,
+                        created_at = roles.created_at,
+                        updated_at = roles.updated_at,
+                    }).ToListAsync();
+                return roles;
+            } catch (Exception ex)
+            {
+                _logger.LogError(ex, "Đã xảy ra lỗi trong quá trình lấy danh sách phân quyền");
+                return new List<RoleResponseDto>();
+            }
+        }
+        //Thêm mới Role
+        public async Task<RoleResponseDto> CreateRole(Role role)
+        {
+            try
+            {
+                if(role == null)
+                {
+                    throw new ArgumentNullException(nameof(role));
+                }
+                role.created_at = DateTime.Now;
+                role.updated_at = DateTime.Now;
+
+                _context.Role.Add(role);
+                await _context.SaveChangesAsync();
+
+                return new RoleResponseDto
+                {
+                    role_id = role.role_id,
+                    role_name = role.role_name,
+                    description = role.description,
+                    created_at = role.created_at,
+                    updated_at = role.updated_at,
+                };
+            } catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi tạo quyền");
+                throw;
+            }
+        }
+        //Chi tiết
+        public async Task<RoleResponseDto> Detail(int id, RoleResponseDto? role)
+        {
+            try
+            {
+                var roleResponse = await _context.Role
+                    .Where(r => r.role_id == id)
+                    .Select(r => new RoleResponseDto
+                    {
+                        role_id = r.role_id,
+                        role_name = r.role_name,
+                        description = r.description,
+                    }).FirstOrDefaultAsync();
+                return roleResponse;
+            } catch (Exception ex)
+            {
+                _logger.LogError(ex, "Loi khi lay san pham theo {Id}", id);
+                throw;
+            }
+        }
+        // Lấy tất cả các Role
+        public async Task<List<RoleResponseDto>> GetAllRoles()
+        {
+            try
+            {
+                return await _context.Role
+                    .Select(r => new RoleResponseDto
+                    {
+                        role_id = r.role_id,
+                        role_name = r.role_name,
+                        description = r.description,
+                        created_at = r.created_at,
+                        updated_at = r.updated_at,
+                    }).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Loi khi lay toan bo cac quyen");
+                throw;
+            }
+        }
+        // Sửa Role
+        public async Task<RoleResponseDto?> EditRole(int id, RolePostDto roleDto)
+        {
+            try
+            {
+                // Tìm Role theo ID
+                var role = await _context.Role.FindAsync(id);
+                if (role == null)
+                {
+                    _logger.LogWarning("Khong tim thay quyen voi ID: {Id}", id);
+                    return null;
+                }
+                role.role_name = roleDto.role_name;
+                role.description = roleDto.description;
+                role.updated_at = DateTime.Now;
+                await _context.SaveChangesAsync();
+                return new RoleResponseDto
+                {
+                    role_id = role.role_id,
+                    role_name = role.role_name,
+                    description = role.description,
+                    created_at = role.created_at,
+                    updated_at = role.updated_at,
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Loi khi cap nhat quyen voi ID: {Id}", id);
+                throw;
+            }
+        }
+        //Xóa Role
+        public async Task<bool> DeleteRole(int id)
+        {
+            try
+            {
+                var role = await _context.Role.FindAsync(id);
+                if( role == null)
+                {
+                    _logger.LogWarning("Khong tim thay quyen voi ID: {Id}", id);
+                    return false;
+                }
+                _context.Role.Remove(role);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Da xoa quyen voi ID: {Id}", id);
+                return true;
+            }catch (Exception ex)
+            {
+                _logger.LogError(ex, "Loi khi xoa quyen voi ID: {Id}", id);
+                return false;
+            }
+        }
+    }
+}
