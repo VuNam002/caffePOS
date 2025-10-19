@@ -50,20 +50,21 @@ namespace CaffePOS.Services
             try
             {
                 var order = await _context.Order
-                    .Where(o => o.order_id == id)
+                    .Where(o => o.OrderId == id)
                     .Select(o => new OrderResponseDto
                     {
-                        order_id = o.order_id,
-                        order_date = o.order_date,
-                        total_amount = o.total_amount,
-                        discount_amount = (decimal)o.discount_amount,
-                        final_amount = o.final_amount,
-                        payment_method = o.payment_method,
-                        status = o.status,
-                        notes = o.notes,
-                        user_id = o.user_id,
-                        customer_name = o.customer_name
-                    }).FirstOrDefaultAsync();
+                        order_id = o.OrderId,
+                        order_date = o.OrderDate,
+                        total_amount = o.TotalAmount,
+                        discount_amount = o.DiscountAmount ?? 0,
+                        final_amount = o.FinalAmount,
+                        payment_method = o.PaymentMethod,
+                        status = o.Status,
+                        notes = o.Notes,
+                        user_id = o.UserId,
+                        customer_name = o.CustomerName
+                    })
+                    .FirstOrDefaultAsync();
                 return order;
             }
             catch (Exception ex)
@@ -146,7 +147,16 @@ namespace CaffePOS.Services
                     status = order.Status,
                     notes = order.Notes,
                     user_id = order.UserId,
-                    customer_name = order.CustomerName
+                    customer_name = order.CustomerName,
+                    items = order.OrderItems?.Select(oi => new OrderItemResponseDto
+                    {
+                        order_item_id = oi.OrderItemId,
+                        item_id = oi.ItemId,
+                        quantity = oi.Quantity,
+                        price_at_sale = oi.PriceAtSale,
+                        subtotal = oi.Subtotal,
+                        item_notd = oi.ItemNotd
+                    }).ToList()
                 };
             }
             catch (Exception ex)

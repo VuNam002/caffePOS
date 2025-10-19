@@ -19,6 +19,6 @@ namespace CaffePOS.Model
 
         public DateTime create_at { get; set; }
 
-        public virtual required ICollection<RolePermission> RolePermissions { get; set; }
+        public virtual required ICollection<RolePermissions> RolePermissions { get; set; }
     }
 }

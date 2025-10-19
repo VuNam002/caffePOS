@@ -20,10 +20,10 @@ namespace CaffePOS.Model
         public DateTime? updated_at { get; set; }
 
         // Thuộc tính điều hướng: Một vai trò có thể có nhiều người dùng
-        public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<Users>? Users { get; set; }
 
         // Thuộc tính điều hướng: Mối quan hệ nhiều-nhiều với Permissions thông qua bảng RolePermissions
-        public virtual ICollection<RolePermission> RolePermissions { get; set; }
+        public virtual ICollection<RolePermissions>? RolePermissions { get; set; }
     }
 }
 

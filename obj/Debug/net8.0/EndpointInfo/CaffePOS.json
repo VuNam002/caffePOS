@@ -1259,6 +1259,32 @@
       },
       "OrderItemResponseDto": {
         "type": "object",
+        "properties": {
+          "order_item_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "item_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "price_at_sale": {
+            "type": "number",
+            "format": "double"
+          },
+          "subtotal": {
+            "type": "number",
+            "format": "double"
+          },
+          "item_notd": {
+            "type": "string",
+            "nullable": true
+          }
+        },
         "additionalProperties": false
       },
       "OrderResponseDto": {

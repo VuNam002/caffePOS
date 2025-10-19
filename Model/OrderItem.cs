@@ -1,42 +1,34 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CaffePOS.Model
 {
     public class OrderItem
     {
         [Key]
-        public int item_id { get; set; }
+        [Column("order_item_id")]
+        public int OrderItemId { get; set; }
 
-        [Required]
-        public string? name { get; set; }
+        [Column("order_id")]
+        public int OrderId { get; set; }
 
-        public string? description { get; set; }
+        [Column("item_id")]
+        public int ItemId { get; set; }
 
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal price { get; set; }
+        [Column("quantity")]
+        public int Quantity { get; set; }
 
-        [ForeignKey("Category")]
-        public int category_id { get; set; }
+        [Column("price_at_sale", TypeName = "decimal(18, 2)")]
+        public decimal PriceAtSale { get; set; }
 
-        public string? image_url { get; set; }
+        [Column("subtotal", TypeName = "decimal(18, 2)")]
+        public decimal Subtotal { get; set; }
 
-        public bool is_active { get; set; }
+        [Column("item_notd")]
+        public string? ItemNotd { get; set; }
 
-        public DateTime created_at { get; set; }
-
-        public DateTime? updated_at { get; set; }
-
-        // Thuộc tính điều hướng đến danh mục của sản phẩm
-        public virtual Category? Category { get; set; }
-
-        // Thuộc tính điều hướng: Một sản phẩm có thể xuất hiện trong nhiều chi tiết đơn hàng
-        public virtual ICollection<OrderItem>? OrderItems { get; set; }
-        public int ItemId { get; internal set; }
-        public int Quantity { get; internal set; }
-        public decimal PriceAtSale { get; internal set; }
-        public decimal Subtotal { get; internal set; }
-        public string? ItemNotd { get; internal set; }
-        public object Item { get; internal set; }
+        // Nếu cần liên kết với Order hoặc Item, thêm navigation property:
+        public virtual Order? Order { get; set; }
+        public virtual Items? Item { get; set; }
     }
 }
