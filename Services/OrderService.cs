@@ -166,26 +166,72 @@ namespace CaffePOS.Services
                 throw;
             }
         }
+        // Xoa don hang theo ID
         public async Task<bool> DeleteOrder(int id)
+        {
+            try
+            {
+                // Xóa các OrderItem liên quan trước
+                var orderItems = _context.Set<OrderItem>().Where(oi => oi.OrderId == id);
+                _context.Set<OrderItem>().RemoveRange(orderItems);
+
+                // Xóa đơn hàng
+                var order = await _context.Order.FindAsync(id);
+                if (order == null)
+                {
+                    _logger.LogWarning("Không tìm thấy đơn hàng");
+                    return false;
+                }
+                _context.Order.Remove(order);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Đã xóa đơn hàng ID {id} thành công", id);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Có lỗi khi xóa đơn hàng");
+                throw;
+            }
+        }
+        //Cap nhat don hang
+        public async Task<OrderResponseDto?> EditOrder(int id, OrderPostDto orderDto)
         {
             try
             {
                 var order = await _context.Order.FindAsync(id);
                 if (order == null)
                 {
-                    _logger.LogWarning("Khong tim thay don hang");
-                    return false;
+                    _logger.LogWarning("Khong tim thay don hang ID {id}", id);
+                    return null;
                 }
-                _context.Order.Remove(order);
+                // Cập nhật các thuộc tính của đơn hàng ở đây
+                order.TotalAmount = orderDto.total_amount;
+                order.DiscountAmount = orderDto.discount_amount;
+                order.FinalAmount = orderDto.final_amount;
+                order.PaymentMethod = orderDto.payment_method;
+                order.Status = orderDto.status;
+                order.Notes = orderDto.notes;
                 await _context.SaveChangesAsync();
-                _logger.LogInformation("Da xoa danh muc ID {id} thanh cong", id);
-                return true;
-            } catch (Exception ex)
+                _logger.LogInformation("Da cap nhat don hang ID {id} thanh cong", id);
+                return new OrderResponseDto
+                {
+                    order_id = order.OrderId,
+                    order_date = order.OrderDate,
+                    total_amount = order.TotalAmount,
+                    discount_amount = order.DiscountAmount ?? 0,
+                    final_amount = order.FinalAmount,
+                    payment_method = order.PaymentMethod,
+                    status = order.Status,
+                    notes = order.Notes,
+                    user_id = order.UserId,
+                    customer_name = order.CustomerName
+                };
+            }
+            catch (Exception ex)
             {
-                _logger.LogError(ex, "Co loi khi xoa don hang");
+                _logger.LogError(ex, "Co loi khi cap nhat don hang ID {id}", id);
                 throw;
             }
-        }
+        } 
     }
-
 }

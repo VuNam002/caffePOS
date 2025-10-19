@@ -105,5 +105,26 @@ namespace CaffePOS.Controllers
                 return StatusCode(500, "Lỗi hệ thống khi xoá đơn hàng.");
             }
         }
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> EditOrder(int id, [FromBody] OrderPostDto dto)
+        {
+            try
+            {
+                if(dto == null)
+                {
+                    return BadRequest("Dữ liệu đơn hàng không hợp lệ");
+                }
+                var updatedOrder = await _orderService.EditOrder(id, dto);
+                if(updatedOrder == null)
+                {
+                    return NotFound($"Không tìm thấy đơn hàng với ID: {id}");
+                }
+                return Ok(updatedOrder);
+            } catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Loi khi cap nhat don hang");
+                return StatusCode(500, "Da co loi xay ra khi cap nhat don hang");
+            }
+        }
     }
 }
