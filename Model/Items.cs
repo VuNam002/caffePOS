@@ -1,14 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CaffePOS.Model;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CaffePOS.Model
 {
+    [Table("Items")]
     public class Items
     {
         [Key]
         [Column("item_id")]
         public int ItemId { get; set; }
 
+        [Required]
         [Column("name")]
         public string Name { get; set; } = string.Empty;
 
@@ -19,10 +22,8 @@ namespace CaffePOS.Model
         public decimal Price { get; set; }
 
         [Column("category_id")]
+        [ForeignKey(nameof(Category))] 
         public int CategoryId { get; set; }
-
-        [ForeignKey("CategoryId")]
-        public Category? Category { get; set; }
 
         [Column("image_url")]
         public string? ImageUrl { get; set; }
@@ -35,5 +36,7 @@ namespace CaffePOS.Model
 
         [Column("updated_at")]
         public DateTime? UpdatedAt { get; set; }
+
+        public virtual Category? Category { get; set; }
     }
 }

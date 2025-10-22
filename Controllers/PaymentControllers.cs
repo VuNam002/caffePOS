@@ -1,0 +1,63 @@
+﻿using CaffePOS.Model;
+using CaffePOS.Model.DTOs.Response;
+using CaffePOS.Services;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CaffePOS.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class PaymentController : ControllerBase
+    {
+        private readonly PaymentService _paymentService;
+        private readonly ILogger<PaymentController> _logger;
+
+        public PaymentController(PaymentService paymentService, ILogger<PaymentController> logger)
+        {
+            _paymentService = paymentService;
+            _logger = logger;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<PaymentResponseDto>>> GetAllPayment()
+        {
+            try
+            {
+                var payments = await _paymentService.GetAllPayment();
+                return Ok(payments);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Loi khi lay toan bo cac cach thanh toan.");
+                return StatusCode(500, "Da co loi xay tr khi lay toan bo phuong thuc thanh toan");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreatePayment([FromBody] PaymentPostDto dto)
+        {
+            try
+            {
+                if(dto == null)
+                {
+                    return BadRequest("Du lieu khong hop le.");
+                }
+                var payment = new Payments
+                {
+                    OrderId = dto.order_id,
+                    PaymentDate = DateTime.Now,
+                    Amount = dto.amount,
+                    Method = dto.method,
+                    TransactionId = dto.transaction_id,
+                    Notes = dto.notes
+                };
+                await _paymentService.CreatePayment(dto);
+                return Ok(payment);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Loi khi tao phuong thuc thanh toan.");
+                return StatusCode(500, "Da co loi xay ra khi tao phuong thuc thanh toan");
+            }
+        }
+    }
+}

@@ -1,29 +1,31 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System;
-using System.Collections.Generic;
+
 namespace CaffePOS.Model
 {
+    [Table("Role")]
     public class Role
     {
         [Key]
-        public int role_id { get; set; }
+        [Column("role_id")]
+        public int RoleId { get; set; }
 
-        [Required] 
-        [StringLength(50)] 
-        public string? role_name { get; set; }
+        [Required]
+        [StringLength(50)]
+        [Column("role_name")]
+        public string RoleName { get; set; } = string.Empty;
 
-        public string? description { get; set; }
+        [Column("description")]
+        public string? Description { get; set; }
 
-        public DateTime created_at { get; set; }
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public DateTime? updated_at { get; set; }
+        [Column("updated_at")]
+        public DateTime? UpdatedAt { get; set; }
 
-        // Thuộc tính điều hướng: Một vai trò có thể có nhiều người dùng
-        public virtual ICollection<Users>? Users { get; set; }
-
-        // Thuộc tính điều hướng: Mối quan hệ nhiều-nhiều với Permissions thông qua bảng RolePermissions
-        public virtual ICollection<RolePermissions>? RolePermissions { get; set; }
+        // Navigation properties
+        public virtual ICollection<Users> Users { get; set; } = new List<Users>();
+        public virtual ICollection<RolePermissions> RolePermissions { get; set; } = new List<RolePermissions>();
     }
 }
-

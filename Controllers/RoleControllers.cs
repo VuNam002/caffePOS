@@ -49,8 +49,8 @@ namespace CaffePOS.Controllers
                 }
                 var role = new Role
                 {
-                    role_name = dto.role_name,
-                    description = dto.description,
+                    RoleName = dto.role_name,
+                    Description = dto.description,
                 };
                 var createRole = await _roleService.CreateRole(role);
                 return Ok(createRole);

@@ -17,6 +17,7 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<PaymentService>();
 
 // Thêm cấu hình xác thực JWT
 builder.Services.AddAuthentication(options =>

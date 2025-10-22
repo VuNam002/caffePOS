@@ -200,13 +200,14 @@ namespace CaffePOS.Services
                 if (item == null)
                     throw new ArgumentNullException(nameof(item));
 
-                // Kiểm tra tồn tại Category
+                // Kiểm tra và load Category trước khi insert
+                Category? category = null;
                 if (item.CategoryId > 0)
                 {
-                    var categoryExists = await _context.Category
-                        .AnyAsync(c => c.CategoryId == item.CategoryId);
+                    category = await _context.Category
+                        .FirstOrDefaultAsync(c => c.CategoryId == item.CategoryId);
 
-                    if (!categoryExists)
+                    if (category == null)
                         throw new ArgumentException($"Category với id {item.CategoryId} không tồn tại");
                 }
 
@@ -216,31 +217,18 @@ namespace CaffePOS.Services
                 _context.Items.Add(item);
                 await _context.SaveChangesAsync();
 
-                // Lấy lại thông tin đầy đủ (bao gồm cả Category) để trả về
-                var createdItem = await _context.Items
-                    .Include(i => i.Category)
-                    .FirstOrDefaultAsync(i => i.ItemId == item.ItemId);
-
-                // Nếu createdItem là null (không thể xảy ra) thì xử lý
-                if (createdItem == null)
-                {
-                    _logger.LogError("Không thể tìm thấy item vừa tạo: {ItemId}", item.ItemId);
-                    // Trả về từ item gốc, dù không có category name
-                    return new ItemResponseDto { item_id = item.ItemId, name = item.Name, /*...*/ };
-                }
-
                 return new ItemResponseDto
                 {
-                    item_id = createdItem.ItemId,
-                    name = createdItem.Name,
-                    description = createdItem.Description,
-                    price = createdItem.Price,
-                    category_id = createdItem.CategoryId,
-                    category_name = (string)createdItem.Category?.CategoryName,
-                    image_url = createdItem.ImageUrl,
-                    is_active = createdItem.IsActive,
-                    created_at = createdItem.CreatedAt,
-                    updated_at = createdItem.UpdatedAt
+                    item_id = item.ItemId,
+                    name = item.Name,
+                    description = item.Description,
+                    price = item.Price,
+                    category_id = item.CategoryId,
+                    category_name = category?.CategoryName, // Dùng category đã load ở trên
+                    image_url = item.ImageUrl,
+                    is_active = item.IsActive,
+                    created_at = item.CreatedAt,
+                    updated_at = item.UpdatedAt
                 };
             }
             catch (Exception ex)

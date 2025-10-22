@@ -49,17 +49,17 @@ namespace CaffePOS.Services
 
                 if (!string.IsNullOrEmpty(request.Keyword))
                 {
-                    query = query.Where(c => c.category_name.Contains(request.Keyword));
+                    query = query.Where(c => c.CategoryName.Contains(request.Keyword));
                 }
 
                 query = request.SortBy?.ToLower() switch
                 {
                     "id" => request.IsDescending
-                        ? query.OrderByDescending(c => c.category_id)
-                        : query.OrderBy(c => c.category_id),
+                        ? query.OrderByDescending(c => c.CategoryId)
+                        : query.OrderBy(c => c.CategoryId),
                     _ => request.IsDescending
-                        ? query.OrderByDescending(c => c.category_name)
-                        : query.OrderBy(c => c.category_name)
+                        ? query.OrderByDescending(c => c.CategoryName)
+                        : query.OrderBy(c => c.CategoryName)
                 };
 
                 var totalCount = await query.CountAsync();
@@ -69,12 +69,12 @@ namespace CaffePOS.Services
                     .Take(request.PageSize)
                     .Select(c => new CategoryResponseDto
                     {
-                        category_id = c.category_id,
-                        category_name = c.category_name,
-                        description = c.description,
-                        is_active = c.is_active,
-                        created_at = c.created_at,
-                        updated_at = c.updated_at
+                        category_id = c.CategoryId,
+                        category_name = c.CategoryName,
+                        description = c.Description,
+                        is_active = c.IsActive,
+                        created_at = c.CreatedAt,
+                        updated_at = c.UpdatedAt
                     })
                     .ToListAsync();
 
@@ -99,15 +99,15 @@ namespace CaffePOS.Services
             try
             {
                 var category = await _context.Category
-                    .Where(c => c.category_id == id)
+                    .Where(c => c.CategoryId == id)
                     .Select(c => new CategoryResponseDto
                     {
-                        category_id = c.category_id,
-                        category_name = c.category_name,
-                        description = c.description,
-                        is_active = c.is_active,
-                        created_at = c.created_at,
-                        updated_at = c.updated_at
+                        category_id = c.CategoryId,
+                        category_name = c.CategoryName,
+                        description = c.Description,
+                        is_active = c.IsActive,
+                        created_at = c.CreatedAt,
+                        updated_at = c.UpdatedAt
                     })
                     .FirstOrDefaultAsync();
 
@@ -126,15 +126,15 @@ namespace CaffePOS.Services
             try
             {
                 return await _context.Category
-                    .Where(c => c.is_active)
+                    .Where(c => c.IsActive)
                     .Select(c => new CategoryResponseDto
                     {
-                        category_id = c.category_id,
-                        category_name = c.category_name,
-                        description = c.description,
-                        created_at = c.created_at,
-                        updated_at = c.updated_at,
-                        is_active = c.is_active
+                        category_id = c.CategoryId,
+                        category_name = c.CategoryName,
+                        description = c.Description,
+                        created_at = c.CreatedAt,
+                        updated_at = c.UpdatedAt,
+                        is_active = c.IsActive
                     }).ToListAsync();
             }
             catch (Exception ex)
@@ -151,11 +151,11 @@ namespace CaffePOS.Services
             {
                 var category = new Category
                 {
-                    category_name = createDto.category_name,
-                    description = createDto.description,
-                    is_active = createDto.is_active,
-                    created_at = DateTime.UtcNow,
-                    updated_at = DateTime.UtcNow
+                    CategoryName = createDto.category_name,
+                    Description = createDto.description,
+                    IsActive = createDto.is_active,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 };
 
                 _context.Category.Add(category);
@@ -163,12 +163,12 @@ namespace CaffePOS.Services
 
                 return new CategoryResponseDto
                 {
-                    category_id = category.category_id,
-                    category_name = category.category_name,
-                    description = category.description,
-                    created_at = category.created_at,
-                    updated_at = category.updated_at,
-                    is_active = category.is_active
+                    category_id = category.CategoryId,
+                    category_name = category.CategoryName,
+                    description = category.Description,
+                    created_at = category.CreatedAt,
+                    updated_at = category.UpdatedAt,
+                    is_active = category.IsActive
                 };
             }
             catch (Exception ex)
@@ -215,10 +215,10 @@ namespace CaffePOS.Services
                     return null;
                 }
 
-                category.category_name = categoryDto.category_name;
-                category.description = categoryDto.description;
-                category.is_active = categoryDto.is_active;
-                category.updated_at = DateTime.UtcNow;
+                category.CategoryName = categoryDto.category_name;
+                category.Description = categoryDto.description;
+                category.IsActive = categoryDto.is_active;
+                category.UpdatedAt = DateTime.UtcNow;
 
                 await _context.SaveChangesAsync();
 
@@ -226,12 +226,12 @@ namespace CaffePOS.Services
 
                 return new CategoryResponseDto
                 {
-                    category_id = category.category_id,
-                    category_name = category.category_name,
-                    description = category.description,
-                    created_at = category.created_at,
-                    updated_at = category.updated_at,
-                    is_active = category.is_active
+                    category_id = category.CategoryId,
+                    category_name = category.CategoryName,
+                    description = category.Description,
+                    created_at = category.CreatedAt,
+                    updated_at = category.UpdatedAt,
+                    is_active = category.IsActive
                 };
             }
             catch (Exception ex)

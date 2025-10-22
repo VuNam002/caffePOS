@@ -3,22 +3,30 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CaffePOS.Model
 {
+    [Table("Permissions")]
     public class Permissions
     {
         [Key]
-        public int permission_id { get; set; }
+        [Column("permission_id")]
+        public int PermissionId { get; set; }
 
         [Required]
         [StringLength(50)]
-        public string? permission_name { get; set; }
+        [Column("permission_name")]
+        public string PermissionName { get; set; } = string.Empty;
 
-        public string? description { get; set; }
+        [Column("description")]
+        public string? Description { get; set; }
 
+        [Required]
         [StringLength(50)]
-        public required string module { get; set; }
+        [Column("module")]
+        public string Module { get; set; } = string.Empty;
 
-        public DateTime create_at { get; set; }
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public virtual required ICollection<RolePermissions> RolePermissions { get; set; }
+        // Navigation property
+        public virtual ICollection<RolePermissions> RolePermissions { get; set; } = new List<RolePermissions>();
     }
 }

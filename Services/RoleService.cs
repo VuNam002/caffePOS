@@ -25,11 +25,11 @@ namespace CaffePOS.Services
                 var roles = await _context.Role
                     .Select(roles => new RoleResponseDto
                     {
-                        role_id = roles.role_id,
-                        role_name = roles.role_name,
-                        description = roles.description,
-                        created_at = roles.created_at,
-                        updated_at = roles.updated_at,
+                        role_id = roles.RoleId,
+                        role_name = roles.RoleName,
+                        description = roles.Description,
+                        created_at = roles.CreatedAt,
+                        updated_at = roles.UpdatedAt,
                     }).ToListAsync();
                 return roles;
             } catch (Exception ex)
@@ -47,19 +47,19 @@ namespace CaffePOS.Services
                 {
                     throw new ArgumentNullException(nameof(role));
                 }
-                role.created_at = DateTime.Now;
-                role.updated_at = DateTime.Now;
+                role.CreatedAt = DateTime.Now;
+                role.UpdatedAt = DateTime.Now;
 
                 _context.Role.Add(role);
                 await _context.SaveChangesAsync();
 
                 return new RoleResponseDto
                 {
-                    role_id = role.role_id,
-                    role_name = role.role_name,
-                    description = role.description,
-                    created_at = role.created_at,
-                    updated_at = role.updated_at,
+                    role_id = role.RoleId,
+                    role_name = role.RoleName,
+                    description = role.Description,
+                    created_at = role.CreatedAt,
+                    updated_at = role.UpdatedAt,
                 };
             } catch (Exception ex)
             {
@@ -73,12 +73,12 @@ namespace CaffePOS.Services
             try
             {
                 var roleResponse = await _context.Role
-                    .Where(r => r.role_id == id)
+                    .Where(r => r.RoleId == id)
                     .Select(r => new RoleResponseDto
                     {
-                        role_id = r.role_id,
-                        role_name = r.role_name,
-                        description = r.description,
+                        role_id = r.RoleId,
+                        role_name = r.RoleName,
+                        description = r.Description,
                     }).FirstOrDefaultAsync();
                 return roleResponse;
             } catch (Exception ex)
@@ -95,11 +95,11 @@ namespace CaffePOS.Services
                 return await _context.Role
                     .Select(r => new RoleResponseDto
                     {
-                        role_id = r.role_id,
-                        role_name = r.role_name,
-                        description = r.description,
-                        created_at = r.created_at,
-                        updated_at = r.updated_at,
+                        role_id = r.RoleId,
+                        role_name = r.RoleName,
+                        description = r.Description,
+                        created_at = r.CreatedAt,
+                        updated_at = r.UpdatedAt,
                     }).ToListAsync();
             }
             catch (Exception ex)
@@ -120,17 +120,17 @@ namespace CaffePOS.Services
                     _logger.LogWarning("Khong tim thay quyen voi ID: {Id}", id);
                     return null;
                 }
-                role.role_name = roleDto.role_name;
-                role.description = roleDto.description;
-                role.updated_at = DateTime.Now;
+                role.RoleName = roleDto.role_name;
+                role.Description = roleDto.description;
+                role.UpdatedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
                 return new RoleResponseDto
                 {
-                    role_id = role.role_id,
-                    role_name = role.role_name,
-                    description = role.description,
-                    created_at = role.created_at,
-                    updated_at = role.updated_at,
+                    role_id = role.RoleId,
+                    role_name = role.RoleName,
+                    description = role.Description,
+                    created_at = role.CreatedAt,
+                    updated_at = role.UpdatedAt,
                 };
             }
             catch (Exception ex)

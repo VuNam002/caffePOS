@@ -3,44 +3,49 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CaffePOS.Model
 {
+    [Table("Users")]
     public class Users
     {
         [Key]
-        public int user_id { get; set; }
+        [Column("user_id")]
+        public int UserId { get; set; }
 
         [Required]
         [StringLength(50)]
-        public string? userName { get; set; }
-        public string UserName { get; internal set; }
+        [Column("username")]
+        public string UserName { get; set; } = string.Empty;
+
         [Required]
-        public string? passWord { get; set; }
-        public string Password { get; internal set; }
-        public string? fullName { get; set; }
-        public string FullName { get; internal set; }
-        [ForeignKey("Role")] // Đánh dấu đây là khóa ngoại liên kết đến bảng Role
-        public int role_id { get; set; }
+        [Column("password")]
+        public string Password { get; set; } = string.Empty;
 
         [StringLength(100)]
-        public string? email { get; set; }
-        public string Email { get; internal set; }
+        [Column("fullname")]
+        public string? FullName { get; set; }
+
+        [ForeignKey(nameof(Role))]
+        [Column("role_id")]
+        public int RoleId { get; set; }
+
+        [StringLength(100)]
+        [Column("email")]
+        public string? Email { get; set; }
+
         [StringLength(20)]
-        public string? phoneNumber { get; set; }
-        public string PhoneNumber { get; internal set; }
-        public bool is_active { get; set; }
+        [Column("phone_number")]
+        public string? PhoneNumber { get; set; }
 
-        public DateTime created_at { get; set; }
+        [Column("is_active")]
+        public bool IsActive { get; set; } = true;
 
-        public DateTime? updated_at { get; set; }
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Thuộc tính điều hướng: Tham chiếu đến đối tượng Role
-        public virtual required Role Role { get; set; }
+        [Column("updated_at")]
+        public DateTime? UpdatedAt { get; set; }
 
-        // Thuộc tính điều hướng: Một người dùng có thể có nhiều đơn hàng
-        public virtual required ICollection<Order> Orders { get; set; }
-        public int UserId { get; internal set; }
-        public int RoleId { get; internal set; }
-        public bool? IsActive { get; internal set; }
-        public DateTime? CreatedAt { get; internal set; }
-        public DateTime? UpdatedAt { get; internal set; }
+        // Navigation properties
+        public virtual Role Role { get; set; } = null!;
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

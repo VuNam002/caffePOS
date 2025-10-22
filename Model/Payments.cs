@@ -3,26 +3,33 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CaffePOS.Model
 {
+    [Table("Payments")]
     public class Payments
     {
         [Key]
-        public int payment_id { get; set; }
+        [Column("payment_id")]
+        public int PaymentId { get; set; }
 
-        [ForeignKey("Order")]
-        public int order_id { get; set; }
+        [ForeignKey(nameof(Order))]
+        [Column("order_id")]
+        public int OrderId { get; set; }
 
-        public DateTime payment_date { get; set; }
+        [Column("payment_date")]
+        public DateTime PaymentDate { get; set; }
 
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal amount { get; set; }
+        [Column("amount", TypeName = "decimal(18,2)")]
+        public decimal Amount { get; set; }
 
-        public string? method { get; set; }
+        [Column("method")]
+        public string? Method { get; set; }
 
-        public string? transaction_id { get; set; }
+        [Column("transaction_id")]
+        public string? TransactionId { get; set; }
 
-        public string? notes { get; set; }
+        [Column("notes")]
+        public string? Notes { get; set; }
 
-        // Thuộc tính điều hướng đến đơn hàng được thanh toán
+        // Navigation property
         public virtual Order? Order { get; set; }
     }
 }

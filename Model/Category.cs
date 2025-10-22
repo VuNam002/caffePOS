@@ -3,27 +3,30 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CaffePOS.Model
 {
+    [Table("Category")]
     public class Category
     {
         [Key]
-        public int category_id { get; set; }
+        [Column("category_id")]
+        public int CategoryId { get; set; }
 
         [Required]
-        public string? category_name { get; set; }
+        [Column("category_name")]
+        public string CategoryName { get; set; } = string.Empty;
 
-        public string? description { get; set; }
-        public string? Description { get; internal set; }
-        public DateTime created_at { get; set; }
+        [Column("description")]
+        public string? Description { get; set; }
 
-        public DateTime? updated_at { get; set; }
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public bool is_active { get; set; }
+        [Column("updated_at")]
+        public DateTime? UpdatedAt { get; set; }
 
-        // Thuộc tính điều hướng: Một danh mục có nhiều sản phẩm
-        public virtual ICollection<Items>? Items { get; set; }
-        public string? CategoryName { get; internal set; }
-        public int CategoryId { get; internal set; }
-        public bool IsActive { get; internal set; }
-        public DateTime CreatedAt { get; internal set; }
+        [Column("is_active")]
+        public bool IsActive { get; set; } = true;
+
+        // Navigation property: Một danh mục có nhiều sản phẩm
+        public virtual ICollection<Items> Items { get; set; } = new List<Items>();
     }
 }
