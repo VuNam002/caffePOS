@@ -69,5 +69,85 @@ namespace CaffePOS.Services
                 throw;
             }
         }
+        //Lấy chi tiết danh mục thanh toán theo ID
+        public async Task<PaymentResponseDto?> Detail(int id)
+        {
+            try
+            {
+                var order = await _context.Payments
+                    .Where(p => p.PaymentId == id)
+                    .Select(p => new PaymentResponseDto
+                    {
+                        payment_id = p.PaymentId,
+                        order_id = p.OrderId,
+                        payment_date = p.PaymentDate,
+                        amount = p.Amount,
+                        method = p.Method,
+                        transaction_id = p.TransactionId,
+                        notes = p.Notes
+                    }).FirstOrDefaultAsync();
+                return order;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Loi khi lay chi tiet phuong thuc thanh toan theo ID.");
+                throw;
+            }
+        }
+        //Sua danh muc
+        public async Task<PaymentResponseDto?> EditPayment(int id, PaymentPostDto paymentDto)
+        {
+            try
+            {
+                var payment = await _context.Payments.FindAsync(id);
+                if (payment == null)
+                {
+                    _logger.LogWarning("Khong tim thay phuong thuc thanh toan cap nhat");
+                    return null;
+                }
+                payment.Method = paymentDto.method;
+                payment.PaymentDate = payment.PaymentDate;
+                payment.Amount = payment.Amount;
+                payment.Notes = payment.Notes;
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Da cap nhat phuong thuc thanh toan thanh cong");
+
+                return new PaymentResponseDto
+                {
+                    payment_id = payment.PaymentId,
+                    payment_date = payment.PaymentDate,
+                    amount = payment.Amount,
+                    method = payment.Method,
+                    notes = payment.Notes,
+                    order_id = payment.OrderId,
+                    transaction_id = payment.TransactionId
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Loi khi cap nhat phuong thuc thanh toan.");
+                throw;
+            }
+        }
+        public async Task<bool> DeletePayment(int id)
+        {
+            try
+            {
+                var payment = await _context.Payments.FindAsync(id);
+                if(payment == null)
+                {
+                    _logger.LogWarning("Khong tim thay phuong thuc thanh toan");
+                    return false;
+                }
+                _context.Payments.Remove(payment);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Da xoa phuong thuc ID: {id}", id);
+                return true;
+            } catch(Exception ex)
+            {
+                _logger.LogError(ex, "Co loi khi xoa phuong thuc thanh toan");
+                throw;
+            }
+        }
     }
 }

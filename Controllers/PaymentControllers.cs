@@ -59,5 +59,60 @@ namespace CaffePOS.Controllers
                 return StatusCode(500, "Da co loi xay ra khi tao phuong thuc thanh toan");
             }
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PaymentResponseDto>> Detail(int id)
+        {
+            try
+            {
+                var order = await _paymentService.Detail(id);
+                if(order == null)
+                {
+                    return NotFound($"Khong tim thay phuong thuc tanh toan");
+                }
+                return Ok(order);
+            } catch(Exception ex)
+            {
+                _logger.LogError(ex, "Khong tim thay chi tiet thanh toan");
+                return StatusCode(500, "Da co loi khi lay chi tiet thanh toan");
+            }
+        }
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> EditPayment(int id, [FromBody] PaymentPostDto dto)
+        {
+            try
+            {
+                if(dto == null)
+                {
+                    return BadRequest("Du lieu khong hop le");
+                }
+                var updatePayment = await _paymentService.EditPayment(id, dto);
+                if(updatePayment == null)
+                {
+                    return NotFound($"Khong tim thay du lieu san pham");
+                }
+                return Ok(updatePayment);
+            } catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Loi khi cap nhat phuong thuc thanh toan");
+                return StatusCode(500, "Da co loi xay ra khi cap nhat phuong thuc thaanh toan");
+            }
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePayment(int id)
+        {
+            try
+            {
+                var result = await _paymentService.DeletePayment(id);
+                if(!result)
+                {
+                    return NotFound("Khong tim thay phuong thuc thanh toan");
+                }
+                return Ok("Xoa phuong thuc thanh toan thanh cong");
+            } catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Co loi khi xoa phuong thuc thanh toan");
+                return StatusCode(500, "Da co loi khi xoa phuong thuc thanh toan");
+            }
+        }
     }
 }
