@@ -23,7 +23,7 @@ namespace CaffePOS.Model
         [Column("module")]
         public string Module { get; set; } = string.Empty;
 
-        [Column("created_at")]
+        [Column("create_at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation property

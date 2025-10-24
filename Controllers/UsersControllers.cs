@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using CaffePOS.Services;
 using CaffePOS.Model.DTOs.Response;
 using CaffePOS.Model.DTOs.Requests;
@@ -8,7 +9,8 @@ namespace CaffePOS.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController : ControllerBase 
+    [Authorize] 
+    public class UsersController : ControllerBase
     {
         private readonly UserService _userService;
         private readonly ILogger<UsersController> _logger;
@@ -33,7 +35,9 @@ namespace CaffePOS.Controllers
                 return StatusCode(500, "Đã có lỗi xảy ra khi lấy toàn bộ tài khoản người dùng");
             }
         }
+
         [HttpPost("login")]
+        [AllowAnonymous] // ⚠️ THÊM: Cho phép login không cần token
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequest)
         {
             try
@@ -41,9 +45,9 @@ namespace CaffePOS.Controllers
                 var token = await _userService.LoginAsync(loginRequest);
                 if (token == null)
                 {
-                    return Unauthorized("Ten dang nhap tai khoan mat khau khong dung hoac bi khoa.");
+                    return Unauthorized(new { message = "Ten dang nhap tai khoan mat khau khong dung hoac bi khoa." });
                 }
-                return Ok(new { Token = token });
+                return Ok(new { token }); 
             }
             catch (Exception ex)
             {
@@ -51,6 +55,7 @@ namespace CaffePOS.Controllers
                 return StatusCode(500, "Da co loi xay ra khi dang nhap");
             }
         }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<UserResponseDto>> Detail(int id)
         {
@@ -69,12 +74,13 @@ namespace CaffePOS.Controllers
                 return StatusCode(500, "Da co loi xay ra khi lay thong tin nguoi dung");
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserPostDto userDto)
         {
             try
             {
-                if(userDto == null)
+                if (userDto == null)
                 {
                     return BadRequest("Du lieu nguoi dung khong hop le");
                 }
@@ -87,17 +93,19 @@ namespace CaffePOS.Controllers
                     PhoneNumber = userDto.phoneNumber,
                     IsActive = userDto.is_active,
                     Password = userDto.passWord,
-                    Role = new Role(), // Fix for CS9035: Required member 'Users.Role' must be set
-                    Orders = new List<Order>() // Fix for CS9035: Required member 'Users.Orders' must be set
+                    Role = new Role(),
+                    Orders = new List<Order>()
                 };
                 var createUser = await _userService.CreateUser(user);
                 return Ok(createUser);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Loi khi tao nguoi dung moi");
                 return StatusCode(500, "Da co loi xay ra khi tao nguoi dung");
             }
         }
+
         [HttpPatch("{id}")]
         public async Task<IActionResult> EditUser(int id, [FromBody] UserPostDto userDto)
         {
@@ -120,6 +128,7 @@ namespace CaffePOS.Controllers
                 return StatusCode(500, "Da co loi xay ra khi sua thong tin nguoi dung");
             }
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -130,7 +139,7 @@ namespace CaffePOS.Controllers
                 {
                     return NotFound($"Khong tim thay nguoi dung voi ID: {id}");
                 }
-                return Ok("Xoa nguoi dung thanh cong");
+                return Ok(new { message = "Xoa nguoi dung thanh cong" });
             }
             catch (Exception ex)
             {

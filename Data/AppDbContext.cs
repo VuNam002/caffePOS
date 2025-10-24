@@ -17,6 +17,7 @@ namespace CaffePOS.Data
         public DbSet<Payments> Payments { get; set; }
         public DbSet<Permissions> Permissions { get; set; }
         public DbSet<RolePermissions> RolePermissions { get; set; }
+        
 
         public override int SaveChanges()
         {
