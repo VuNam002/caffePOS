@@ -12,15 +12,15 @@ namespace CaffePOS.Model
 
         [Required]
         [StringLength(50)]
-        [Column("username")]
+        [Column("userName")]
         public string UserName { get; set; } = string.Empty;
 
         [Required]
-        [Column("password")]
+        [Column("passWord")]
         public string Password { get; set; } = string.Empty;
 
         [StringLength(100)]
-        [Column("fullname")]
+        [Column("fullName")]
         public string? FullName { get; set; }
 
         [ForeignKey(nameof(Role))]
@@ -32,7 +32,7 @@ namespace CaffePOS.Model
         public string? Email { get; set; }
 
         [StringLength(20)]
-        [Column("phone_number")]
+        [Column("phoneNumber")]
         public string? PhoneNumber { get; set; }
 
         [Column("is_active")]

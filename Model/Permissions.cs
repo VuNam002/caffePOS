@@ -26,6 +26,9 @@ namespace CaffePOS.Model
         [Column("create_at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        [Column("update_at")]
+        public DateTime? UpdatedAt { get; set; }
+
         // Navigation property
         public virtual ICollection<RolePermissions> RolePermissions { get; set; } = new List<RolePermissions>();
     }
